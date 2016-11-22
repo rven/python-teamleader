@@ -7,6 +7,7 @@ import logging
 import pycountry
 import datetime
 import time
+import pkg_resources
 
 from teamleader.exceptions import *
 
@@ -56,6 +57,28 @@ class Teamleader(object):
             raise InvalidInputError('Invalid argument: ' + repr(arg))
 
         return arg or t()
+
+    @staticmethod
+    def _check_country(country):
+        if country is not None:
+            try:
+                if cmp(pkg_resources.get_distribution('pycountry').version, '16.10.23rc1') < 0:
+                    pycountry.countries.get(alpha2=country.upper())
+                else:
+                    pycountry.countries.get(alpha_2=country.upper())
+            except:
+                raise InvalidInputError("Invalid contents of argument country.")
+
+    @staticmethod
+    def _check_language(language):
+        if language is not None:
+            try:
+                if cmp(pkg_resources.get_distribution('pycountry').version, '16.10.23rc1') < 0:
+                    pycountry.languages.get(iso639_1_code=language.lower())
+                else:
+                    pycountry.languages.get(alpha_2=language.lower())
+            except:
+                raise InvalidInputError("Invalid contents of argument language.")
 
     def get_users(self, show_inactive_users=False):
         """Getting all users.
@@ -157,17 +180,9 @@ class Teamleader(object):
         tags = self._validate_type(tags, list)
         custom_fields = self._validate_type(custom_fields, dict)
 
-        if country is not None:
-            try:
-                pycountry.countries.get(alpha2=country.upper())
-            except:
-                raise InvalidInputError("Invalid contents of argument country.")
+        self._check_country(country)
 
-        if language is not None:
-            try:
-                pycountry.languages.get(iso639_1_code=language.lower())
-            except:
-                raise InvalidInputError("Invalid contents of argument language.")
+        self._check_language(language)
 
         if date_of_birth is not None and type(date_of_birth) != datetime.date:
             raise InvalidInputError("Invalid contents of argument date_of_birth.")
@@ -236,17 +251,9 @@ class Teamleader(object):
         del_tags = self._validate_type(del_tags, list)
         custom_fields = self._validate_type(custom_fields, dict)
 
-        if country is not None:
-            try:
-                pycountry.countries.get(alpha2=country.upper())
-            except:
-                raise InvalidInputError("Invalid contents of argument country.")
+        self._check_country(country)
 
-        if language is not None:
-            try:
-                pycountry.languages.get(iso639_1_code=language.lower())
-            except:
-                raise InvalidInputError("Invalid contents of argument language.")
+        self._check_language(language)
 
         if date_of_birth is not None and type(date_of_birth) != datetime.date:
             raise InvalidInputError("Invalid contents of argument date_of_birth.")
@@ -409,17 +416,9 @@ class Teamleader(object):
         tags = self._validate_type(tags, list)
         custom_fields = self._validate_type(custom_fields, dict)
 
-        if country is not None:
-            try:
-                pycountry.countries.get(alpha2=country.upper())
-            except:
-                raise InvalidInputError("Invalid contents of argument country.")
+        self._check_country(country)
 
-        if language is not None:
-            try:
-                pycountry.languages.get(iso639_1_code=language.lower())
-            except:
-                raise InvalidInputError("Invalid contents of argument language.")
+        self._check_language(language)
 
         if payment_term is not None:
             if payment_term not in ['0D', '7D', '10D', '15D', '21D', '30D', '45D', '60D', '30DEM', '60DEM', '90DEM']:
@@ -481,17 +480,9 @@ class Teamleader(object):
         del_tags = self._validate_type(del_tags, list)
         custom_fields = self._validate_type(custom_fields, dict)
 
-        if country is not None:
-            try:
-                pycountry.countries.get(alpha2=country.upper())
-            except:
-                raise InvalidInputError("Invalid contents of argument country.")
+        self._check_country(country)
 
-        if language is not None:
-            try:
-                pycountry.languages.get(iso639_1_code=language.lower())
-            except:
-                raise InvalidInputError("Invalid contents of argument language.")
+        self._check_language(language)
 
         if payment_term is not None:
             if payment_term not in ['0D', '7D', '10D', '15D', '21D', '30D', '45D', '60D', '30DEM', '60DEM', '90DEM']:
@@ -581,11 +572,7 @@ class Teamleader(object):
             within a certain country.
         """
 
-        if country is not None:
-            try:
-                pycountry.countries.get(alpha2=country.upper())
-            except:
-                raise InvalidInputError("Invalid contents of argument country.")
+        self._check_country(country)
 
         return [d['name'] for d in self._request('getBusinessTypes', {'country': country})]
 
