@@ -188,9 +188,9 @@ class Teamleader(object):
             raise InvalidInputError("Invalid contents of argument date_of_birth.")
 
         # convert data elements that need conversion
-        data['add_tag_by_string'] = ','.join(data.pop('tags'))
+        data['add_tag_by_string'] = ','.join(data.pop('tags', []))
 
-        for custom_field_id, custom_field_value in data.pop('custom_fields').items():
+        for custom_field_id, custom_field_value in data.pop('custom_fields', {}).items():
             data['custom_field_' + str(custom_field_id)] = custom_field_value
 
         if date_of_birth is not None:
@@ -259,10 +259,10 @@ class Teamleader(object):
             raise InvalidInputError("Invalid contents of argument date_of_birth.")
 
         # convert data elements that need conversion
-        data['add_tag_by_string'] = ','.join(data.pop('tags'))
-        data['remove_tag_by_string'] = ','.join(data.pop('del_tags'))
+        data['add_tag_by_string'] = ','.join(data.pop('tags', []))
+        data['remove_tag_by_string'] = ','.join(data.pop('del_tags', []))
 
-        for custom_field_id, custom_field_value in data.pop('custom_fields').items():
+        for custom_field_id, custom_field_value in data.pop('custom_fields', {}).items():
             data['custom_field_' + str(custom_field_id)] = custom_field_value
 
         if date_of_birth is not None:
@@ -425,9 +425,9 @@ class Teamleader(object):
                 raise InvalidInputError("Invalid contents of argument payment_term.")
 
         # convert data elements that need conversion
-        data['add_tag_by_string'] = ','.join(data.pop('tags'))
+        data['add_tag_by_string'] = ','.join(data.pop('tags', []))
 
-        for custom_field_id, custom_field_value in data.pop('custom_fields').items():
+        for custom_field_id, custom_field_value in data.pop('custom_fields', {}).items():
             data['custom_field_' + str(custom_field_id)] = custom_field_value
 
         data['automerge_by_name'] = int(automerge_by_name)
@@ -489,10 +489,10 @@ class Teamleader(object):
                 raise InvalidInputError("Invalid contents of argument payment_term.")
 
         # convert data elements that need conversion
-        data['add_tag_by_string'] = ','.join(data.pop('tags'))
-        data['remove_tag_by_string'] = ','.join(data.pop('del_tags'))
+        data['add_tag_by_string'] = ','.join(data.pop('tags', []))
+        data['remove_tag_by_string'] = ','.join(data.pop('del_tags', []))
 
-        for custom_field_id, custom_field_value in data.pop('custom_fields').items():
+        for custom_field_id, custom_field_value in data.pop('custom_fields', {}).items():
             data['custom_field_' + str(custom_field_id)] = custom_field_value
 
         self._request('updateCompany', data)
