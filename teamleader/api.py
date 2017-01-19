@@ -695,3 +695,81 @@ class Teamleader(object):
 
     def get_creditnote(self):
         pass
+
+    # Deals
+    def get_deal(self, deal_id):
+        """Fetching deal information.
+
+        Args:
+            deal_id: integer: ID of the deal
+
+        Returns:
+            Dictionary with info about the deal.
+        """
+
+        return self._request('getDeal', {
+            'deal_id': deal_id,
+        })
+
+    def get_company_deals(self, company_id):
+        """Searching all deals related to a company.
+
+        Args:
+            company_id: integer: ID of the company
+
+        Returns:
+            Dictionary with company deals.
+        """
+
+        return self._request('getDealsByContactOrCompany', {
+            'contact_or_company': 'company',
+            'contact_or_company_id': company_id,
+        })
+
+    def get_contact_deals(self, contact_id):
+        """Searching all deals related to a contact.
+
+        Args:
+            contact_id: integer: ID of the contact
+
+        Returns:
+            Dictionary with contact deals.
+        """
+
+        return self._request('getDealsByContactOrCompany', {
+            'contact_or_company': 'contact',
+            'contact_or_company_id': contact_id,
+        })
+
+    def get_all_deal_phase_changes(self, date_from, date_to=datetime.date.today()):
+        """Fetching deal phase changes for all deals in a certain time range.
+
+        Args:
+            date_from: date (dd/mm/yyyy): the start date of the period
+            date_to: date (dd/mm/yyyy): the end date of the period
+
+        Returns:
+            Dictionary containing all phase changes that occurred in this period.
+        """
+        if date_from is not None and type(date_from) != datetime.date:
+            raise InvalidInputError("Invalid contents of argument date_from.")
+
+        if date_to is not None and type(date_to) != datetime.date:
+            raise InvalidInputError("Invalid contents of argument date_to.")
+
+        return self._request('getAllDealPhaseChanges', {
+            'date_from': date_from.strftime('%d/%m/%Y'),
+            'date_to': date_to.strftime('%d/%m/%Y'),
+        })
+
+    def get_deal_phases(self):
+        """Fetching all deal phases.
+
+        Args:
+            none
+
+        Returns:
+            Dictionary with deal phases.
+        """
+
+        return self._request('getDealPhases')
