@@ -12,10 +12,11 @@ import pkg_resources
 from teamleader.exceptions import *
 
 
-logging.basicConfig(level='DEBUG')
+logging.basicConfig(level='ERROR')
 log = logging.getLogger('teamleader.api')
 
-base_url = "https://www.teamleader.be/api/{0}.php"
+
+base_url = "https://app.teamleader.eu/api/{0}.php"
 amount = 100
 
 
@@ -37,19 +38,29 @@ class Teamleader(object):
         r = requests.post(base_url.format(endpoint), data=data)
         response = r.json()
 
-        if r.status_code == requests.codes.unauthorized:
-            raise TeamleaderUnauthorizedError(message=response['reason'], api_response=r)
-
-        if r.status_code == 505:
-            raise TeamleaderRateLimitExceededError(message=response['reason'], api_response=r)
-
-        if r.status_code == requests.codes.bad_request:
-            raise TeamleaderBadRequestError(message=response['reason'], api_response=r)
-
         if r.status_code == requests.codes.ok:
             return r.json()
 
-        raise TeamleaderUnknownAPIError(message=response['reason'], api_response=r)
+        if isinstance(response, (str,unicode)):
+            response = response
+        else:
+            response = response['reason']
+
+        if r.status_code == requests.codes.unauthorized:
+            log.error('TeamleaderUnauthorizedError: {0}'.format(r))
+            raise TeamleaderUnauthorizedError(message=response, api_response=r)
+
+        if r.status_code == 505:
+            log.error('TeamleaderRateLimitExceededError: {0}'.format(r))
+            raise TeamleaderRateLimitExceededError(message=response, api_response=r)
+
+        if r.status_code == requests.codes.bad_request:
+            log.error('TeamleaderBadRequestError: {0}'.format(r))
+            raise TeamleaderBadRequestError(message=response, api_response=r)
+
+        log.error('TeamleaderUnknownAPIError: {0}'.format(r))
+        raise TeamleaderUnknownAPIError(message=response, api_response=r)
+
 
     @staticmethod
     def _validate_type(arg, t):
