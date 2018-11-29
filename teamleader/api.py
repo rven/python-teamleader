@@ -26,6 +26,10 @@ class Teamleader(object):
         log.debug("Initializing Teamleader with group {0} and secret {1}".format(api_group, api_secret))
         self.group = api_group
         self.secret = api_secret
+        self.readonly_mode = False
+
+    def set_readonly_mode(self):
+        self.readonly_mode = True
 
     def _request(self, endpoint, data=None):
         """Internal method for making a request to a Teamleader endpoint.
@@ -60,7 +64,6 @@ class Teamleader(object):
 
         log.error('TeamleaderUnknownAPIError: {0}'.format(r))
         raise TeamleaderUnknownAPIError(message=response, api_response=r)
-
 
     @staticmethod
     def _validate_type(arg, t):
@@ -213,7 +216,9 @@ class Teamleader(object):
         data['automerge_by_name'] = int(automerge_by_name)
         data['automerge_by_email'] = int(automerge_by_email)
 
-        return self._request('addContact', data)
+        if not self.readonly_mode:
+            return self._request('addContact', data)
+        return -999999
 
     def update_contact(self, contact_id, track_changes=True,
             forename=None, surname=None, email=None, telephone=None, gsm=None,
@@ -279,7 +284,8 @@ class Teamleader(object):
         if date_of_birth is not None:
             data['dob'] = time.mktime(data.pop('date_of_birth').timetuple())
 
-        self._request('updateContact', data)
+        if not self.readonly_mode:
+            self._request('updateContact', data)
 
     def delete_contact(self, contact_id):
         """Deleting a contact.
@@ -288,7 +294,8 @@ class Teamleader(object):
             contact_id: integer: ID of the contact
         """
 
-        self._request('deleteContact', {'contact_id': contact_id})
+        if not self.readonly_mode:
+            self._request('deleteContact', {'contact_id': contact_id})
 
     def link_contact_company(self, contact_id, company_id, function=None):
         """Deleting a contact.
@@ -299,7 +306,8 @@ class Teamleader(object):
             function: string: the job title the contact holds at the company (eg: HR manager)
         """
 
-        self._request('linkContactToCompany', {'contact_id': contact_id, 'company_id': company_id, 'mode': 'link', 'function': function})
+        if not self.readonly_mode:
+            self._request('linkContactToCompany', {'contact_id': contact_id, 'company_id': company_id, 'mode': 'link', 'function': function})
 
     def unlink_contact_company(self, contact_id, company_id):
         """Deleting a contact.
@@ -309,7 +317,8 @@ class Teamleader(object):
             company_id: integer: ID of the company
         """
 
-        self._request('linkContactToCompany', {'contact_id': contact_id, 'company_id': company_id, 'mode': 'unlink'})
+        if not self.readonly_mode:
+            self._request('linkContactToCompany', {'contact_id': contact_id, 'company_id': company_id, 'mode': 'unlink'})
 
     def get_contacts(self, query=None, modified_since=None, filter_by_tag=None, segment_id=None, selected_customfields=None):
         """Searching Teamleader contacts.
@@ -445,7 +454,9 @@ class Teamleader(object):
         data['automerge_by_email'] = int(automerge_by_email)
         data['automerge_by_vat_code'] = int(automerge_by_vat_code)
 
-        return self._request('addCompany', data)
+        if not self.readonly_mode:
+            return self._request('addCompany', data)
+        return -999999
 
     def update_company(self, company_id, track_changes=True,
             name=None, email=None, vat_code=None, telephone=None, country=None, zipcode=None,
@@ -506,7 +517,8 @@ class Teamleader(object):
         for custom_field_id, custom_field_value in data.pop('custom_fields', {}).items():
             data['custom_field_' + str(custom_field_id)] = custom_field_value
 
-        self._request('updateCompany', data)
+        if not self.readonly_mode:
+            self._request('updateCompany', data)
 
     def delete_company(self, company_id):
         """Deleting a company.
@@ -515,7 +527,8 @@ class Teamleader(object):
             company_id: integer: ID of the company
         """
 
-        self._request('deleteCompany', {'company_id': company_id})
+        if not self.readonly_mode:
+            self._request('deleteCompany', {'company_id': company_id})
 
     def get_companies(self, query=None, modified_since=None, filter_by_tag=None, segment_id=None, selected_customfields=None):
         """Searching Teamleader companies.
@@ -675,7 +688,9 @@ class Teamleader(object):
         if date is not None:
             data['date'] = data.pop('date').strftime('%d/%m/%Y')
 
-        return self._request('addInvoice', data)
+        if not self.readonly_mode:
+            return self._request('addInvoice', data)
+        return -999999
 
     def add_creditnote(self):
         pass
